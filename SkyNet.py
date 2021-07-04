@@ -213,21 +213,24 @@ class Interface():
                     crt_email = False
 
             else:  # SKYNET ID
-                email_id = db.child('user_details').child(username).child('email').get().val()
-                if email_id != None:
-                    name_id = db.child('user_details').child(username).child('name').get().val()
-                    # print('Email OK')
-                    crt_email = True
-                    # print('Checking Password')
-                    try:
-                        auth.sign_in_with_email_and_password(email_id, password)
-                        # print('Password OK')
-                        crt_password = True
-                    except:
-                        # print('Password NOT OK')
-                        crt_password = False
-                else:
-                    # print('Email NOT OK')
+                try:
+                    email_id = db.child('user_details').child(username).child('email').get().val()
+                    if email_id != None:
+                        name_id = db.child('user_details').child(username).child('name').get().val()
+                        # print('Email OK')
+                        crt_email = True
+                        # print('Checking Password')
+                        try:
+                            auth.sign_in_with_email_and_password(email_id, password)
+                            # print('Password OK')
+                            crt_password = True
+                        except:
+                            # print('Password NOT OK')
+                            crt_password = False
+                    else:
+                        # print('Email NOT OK')
+                        crt_email = False
+                except:
                     crt_email = False
         else:
             empty = True
