@@ -36,4 +36,30 @@ def login():
     all = db.child('user_details').child(username).get().val()
     if password == all['password']:
         print('OK')
-login()
+
+def streaming():
+    # all = db.child('messages').get().each()
+    # for items in all:
+    #    print(items.val())
+    global first_iter
+    first_iter = True
+    def stream_handler(message):
+        global first_iter
+        #print('25', message)
+        data = message["data"]
+        print('27', data)  # {'title': 'Pyrebase', "body": "etc..."}
+
+        if first_iter == False:
+            print('30', data)
+
+        if first_iter == True:
+            try:
+                for item in data:
+                    print('35', data[item])
+                first_iter = False
+            except TypeError:
+                pass
+    my_stream = db.child("messages").stream(stream_handler)
+
+
+streaming()
