@@ -378,7 +378,7 @@ class Interface():
                 except TypeError:
                     pass
 
-        my_stream = db.child("messages").stream(stream_handler)
+        my_stream = db.child("messages").stream(stream_handler,stream_id=name_id)
 
     def new_id():
         global img2, aentry1_error, aentry2_error, aentry3_error, aentry4_error, aentry1, aentry2, aentry3, aentry4, asignup, asignup_error
