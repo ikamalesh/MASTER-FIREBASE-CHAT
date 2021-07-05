@@ -357,12 +357,14 @@ class Interface():
                 text_box.insert(END, f"{data}\n")
                 text_box.see(END)
                 text_box.config(state=DISABLED)
-                if sent == True:
-                    msg_box.delete(0, END)
-                    sent = False
-                else:
+                try:
+                    if sent == True:
+                        msg_box.delete(0, END)
+                        sent = False
+                    else:
+                        pass
+                except:
                     pass
-
             if first_iter == True:
                 try:
                     text_box.config(state=NORMAL)
