@@ -1,7 +1,7 @@
 # MASTER-FIREBASE-CHAT
 
 Modules used
-1. Pyrebase 4.0
+1. Pyrebase  4.5.0
 2. Pillow
 
 
