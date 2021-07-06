@@ -1,4 +1,4 @@
-# MASTER-FIREBASE-CHAT
+# SkyNet Messenger
 
 Modules used
 1. Pyrebase  4.5.0
