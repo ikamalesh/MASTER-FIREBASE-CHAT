@@ -5,16 +5,9 @@ from tkinter import messagebox
 import pyrebase
 from PIL import Image, ImageTk
 
-firebaseConfig = {
-    'apiKey': "AIzaSyBlB2OBLZU3ku6-CjGZmdsNY_ujSw5aC-U",
-    'authDomain': "noted-flash-306012.firebaseapp.com",
-    'databaseURL': "https://noted-flash-306012-default-rtdb.asia-southeast1.firebasedatabase.app",
-    'projectId': "noted-flash-306012",
-    'storageBucket': "noted-flash-306012.appspot.com",
-    'messagingSenderId': "822280810171",
-    'appId': "1:822280810171:web:23bb2f142d57126afa039e"
-}
 
+with open('firebase.json','r') as c:
+    firebaseConfig = json.load(c)
 firebase = pyrebase.initialize_app(firebaseConfig)
 
 db = firebase.database()
@@ -32,7 +25,7 @@ class Interface():
 
     def login_page():
         global img, access, entry1, entry2, color1, color2, entry1_error, entry2_error, signin
-        img = ImageTk.PhotoImage(Image.open("alien_simple.png"))
+        img = ImageTk.PhotoImage(Image.open("others/alien_head.png"))
         sub_y = 50
         color1, color2 = '#191919', '#EDF1F4'
         frame_login = Frame(window, bg=color2)
@@ -113,7 +106,7 @@ class Interface():
                      activebackground=color2, fg=color1)
         back.place(x=0, y=2, width=45, height=25)
 
-        img3 = ImageTk.PhotoImage(Image.open("space_ship.png"))
+        img3 = ImageTk.PhotoImage(Image.open("others/space_ship.png"))
         logo = Label(frame_about, image=img3, bg=color2)
         logo.place(x=w / 2 - 128 / 2, y=60)
 
@@ -396,7 +389,7 @@ class Interface():
                       activebackground=color2, fg=color1)
         back.place(x=0, y=2, width=45, height=25)
 
-        img2 = ImageTk.PhotoImage(Image.open("space_ship.png"))
+        img2 = ImageTk.PhotoImage(Image.open("others/space_ship.png"))
         logo = Label(frame_new, image=img2, bg=color2)
         logo.place(x=w / 2 - 128 / 2, y=60)
 
