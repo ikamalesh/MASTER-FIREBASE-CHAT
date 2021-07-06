@@ -1,5 +1,6 @@
-# SkyNet Messenger
-
+# SkyNet Messenger (One-room)
+### Working on Multi Chatrooms.
+<br></br>
 Modules used
 1. Pyrebase  4.5.0
 2. Pillow
