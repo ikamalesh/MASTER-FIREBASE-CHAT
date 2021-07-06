@@ -357,12 +357,14 @@ class Interface():
                 text_box.insert(END, f"{data}\n")
                 text_box.see(END)
                 text_box.config(state=DISABLED)
-                if sent == True:
-                    msg_box.delete(0, END)
-                    sent = False
-                else:
+                try:
+                    if sent == True:
+                        msg_box.delete(0, END)
+                        sent = False
+                    else:
+                        pass
+                except:
                     pass
-
             if first_iter == True:
                 try:
                     text_box.config(state=NORMAL)
@@ -378,7 +380,7 @@ class Interface():
                 except TypeError:
                     pass
 
-        my_stream = db.child("messages").stream(stream_handler)
+        my_stream = db.child("messages").stream(stream_handler,stream_id=name_id)
 
     def new_id():
         global img2, aentry1_error, aentry2_error, aentry3_error, aentry4_error, aentry1, aentry2, aentry3, aentry4, asignup, asignup_error
