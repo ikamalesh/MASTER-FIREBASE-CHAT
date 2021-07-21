@@ -4,6 +4,10 @@ from tkinter import *
 from tkinter import messagebox
 import pyrebase
 from PIL import Image, ImageTk
+from pathlib import Path
+
+# Path to asset files for this GUI window.
+ASSETS_PATH = Path(__file__).resolve().parent / "assets"
 
 
 with open('assets/firebase.json', 'r') as c:
@@ -25,14 +29,18 @@ class Interface():
 
     def login_page():
         global img, access, entry1, entry2, color1, color2, entry1_error, entry2_error, signin
-        img = ImageTk.PhotoImage(Image.open("assets/alien_head.png"))
-        sub_y = 50
-        color1, color2 = '#191919', '#EDF1F4'
+        img = Image.open(ASSETS_PATH/"3/skynet-logos.jpeg")
+        img = img.resize((250,250))
+        img = ImageTk.PhotoImage(img)
+        sub_y = 70
+        color1, color2 = '#191919', "#F7BF4F"#'#EDF1F4'
+
         frame_login = Frame(window, bg=color2)
         frame_login.place(x=0, y=0, width=w, height=h)
 
         logo = Label(frame_login, image=img, bg=color2)
-        logo.place(x=w / 2 - 128 / 2, y=60)
+        logo.place(x=w / 2 - 250 / 2, y=10)
+        #logo.place(x=w / 2 - 128 / 2, y=60)
 
         l1 = Label(frame_login, text='SkyNet ID:', bg=color2, fg=color1, anchor='w')
         l1.place(x=w / 2 - 100, y=180 + sub_y, width=200, height=20)
