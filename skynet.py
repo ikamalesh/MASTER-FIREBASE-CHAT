@@ -27,25 +27,28 @@ class Interface():
         window.title("SkyNet Messenger")
         Interface.login_page()
 
-    def login_page():
-        global img, access, entry1, entry2, color1, color2, entry1_error, entry2_error, signin
-        img = Image.open(ASSETS_PATH/"3/skynet-logos.jpeg")
-        img = img.resize((250,250))
-        img = ImageTk.PhotoImage(img)
-        sub_y = 70
-        color1, color2 = '#191919', "#F7BF4F"#'#EDF1F4'
 
-        frame_login = Frame(window, bg=color2)
+    def login_page():
+        global logo_img, access, entry1, entry2, color1_text, color2_litegrey,color3_blue,color4_topribbon, entry1_error, entry2_error, signin
+        logo_img = Image.open(ASSETS_PATH / "2/skynet-logos_black.png")
+        logo_img = logo_img.resize((350, 350))
+        logo_img = ImageTk.PhotoImage(logo_img)
+        sub_y = 50
+        color1_text, color2_litegrey, color3_blue,color4_topribbon = '#191919', '#EDF1F4', '#3A89ED','silver'
+
+        frame_login = Frame(window, bg=color2_litegrey)
         frame_login.place(x=0, y=0, width=w, height=h)
 
-        logo = Label(frame_login, image=img, bg=color2)
-        logo.place(x=w / 2 - 250 / 2, y=10)
+        logo = Label(frame_login, image=logo_img, bg=color2_litegrey)
+        logo.place(x=w / 2 - 350 / 2, y=-35)
         #logo.place(x=w / 2 - 128 / 2, y=60)
 
-        l1 = Label(frame_login, text='SkyNet ID:', bg=color2, fg=color1, anchor='w')
+        Frame(frame_login, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+
+        l1 = Label(frame_login, text='SkyNet ID:', bg=color2_litegrey, fg=color1_text, anchor='w')
         l1.place(x=w / 2 - 100, y=180 + sub_y, width=200, height=20)
 
-        l2 = Label(frame_login, text='Password:', bg=color2, anchor='w', fg=color1)
+        l2 = Label(frame_login, text='Password:', bg=color2_litegrey, anchor='w', fg=color1_text)
         l2.place(x=w / 2 - 100, y=230 + sub_y, width=200, height=20)
 
         def element1_event(event):
@@ -72,31 +75,31 @@ class Interface():
         entry2.bind('<Return>', login_bind)
         access = BooleanVar()
 
-        remember = Checkbutton(frame_login, text='Stay signed in', anchor='w', fg=color1, activebackground=color2,
-                               variable=access, bd=0, bg=color2)
+        remember = Checkbutton(frame_login, text='Stay signed in', anchor='w', fg=color1_text, activebackground=color2_litegrey, activeforeground=color1_text,
+                               variable=access, bd=0, bg=color2_litegrey)
         remember.select()
         remember.place(x=w / 2 - 100, y=290 + sub_y, width=200, height=23)
 
-        forgot = Button(frame_login, text='Forgot your password?', fg='#5A6FFA', bg=color2, bd=0,
-                        activeforeground='blue', command=Interface.forgot_page, activebackground=color2)
+        forgot = Button(frame_login, text='Forgot your password?', fg=color3_blue, bg=color2_litegrey, bd=0,
+                        activeforeground='blue', command=Interface.forgot_page, activebackground=color2_litegrey)
         forgot.place(x=w / 2 - 100, y=320 + sub_y, width=200, height=25)
 
-        new = Button(frame_login, text='Get a new SkyNet ID', fg='#5A6FFA', bg=color2, bd=0, activeforeground='blue',
-                     activebackground=color2, command=Interface.new_id)
-        new.place(x=w / 2 - 100, y=350 + sub_y, width=200, height=25)
+        new = Button(frame_login, text='Get a new SkyNet ID', fg=color3_blue, bg=color2_litegrey, bd=0, activeforeground='blue',
+                     activebackground=color2_litegrey, command=Interface.new_id)
+        new.place(x=w / 2 - 100, y=345 + sub_y, width=200, height=25)
 
-        signin_error = Label(frame_login, bd=0, bg='grey')
-        signin_error.place(x=w / 2 - 51, y=399 + sub_y, width=102, height=27)
+        #signin_error = Label(frame_login, bd=0, bg='grey')
+        #signin_error.place(x=w / 2 - 51, y=399 + sub_y, width=102, height=27)
 
-        signin = Button(frame_login, text='Sign In', fg='#5A6FFA', bg=color2, bd=0, activeforeground='blue',
-                        activebackground=color2, command=Interface.login)
-        signin.place(x=w / 2 - 50, y=400 + sub_y, width=100, height=25)
+        #signin = Button(frame_login, text='Sign In', fg=color3_blue, bg=color2_litegrey, bd=0, activeforeground='blue',
+        #                activebackground=color2_litegrey, command=Interface.login)
+        #signin.place(x=w / 2 - 50, y=400 + sub_y, width=100, height=25)
 
-        about = Button(frame_login, text='About', bd=0, bg=color2, relief=SOLID, activebackground=color2,command=Interface.about_page)
-        about.place(x=0, y=2, width=45, height=25)
+        about = Button(frame_login, text='About', bd=0, bg=color4_topribbon, relief=SOLID, activebackground=color4_topribbon, command=Interface.about_page)
+        about.place(x=10, y=2, width=45, height=25)
 
-        help = Button(frame_login, text='Help', bd=0, bg=color2, relief=SOLID, activebackground=color2,command=Interface.help_page)
-        help.place(x=46, y=2, width=45, height=25)
+        help = Button(frame_login, text='Help', bd=0, bg=color4_topribbon, relief=SOLID, activebackground=color4_topribbon, command=Interface.help_page)
+        help.place(x=60, y=2, width=45, height=25)
 
         with open('assets/cred.json') as data_file:
             data_loaded = json.load(data_file)
@@ -105,42 +108,50 @@ class Interface():
             entry2.insert(0, data_loaded['password'])
         else:
             pass
+        global but_img,logo1
+        but_img = Image.open(ASSETS_PATH / "button2.png")
+        ref = 150
+        #but_img = but_img.resize((ref, 40))
+        but_img = ImageTk.PhotoImage(but_img)
+        logo1 = Button(frame_login, image=but_img, bg=color2_litegrey,bd=0,command=Interface.login)
+        logo1.place(x=w / 2 - ref / 2, y=h-155)
+
 
     def about_page():
         global img3
-        frame_about = Frame(window, bg=color2)
+        frame_about = Frame(window, bg=color2_litegrey)
         frame_about.place(x=0, y=0, width=w, height=h)
-        back = Button(frame_about, text='Back', bd=0, bg=color2, relief=SOLID, command=frame_about.destroy,
-                     activebackground=color2, fg=color1)
-        back.place(x=0, y=2, width=45, height=25)
+        logo = Label(frame_about, image=logo_img, bg=color2_litegrey)
+        logo.place(x=w / 2 - 350 / 2, y=-35)
 
-        img3 = ImageTk.PhotoImage(Image.open("assets/space_ship.png"))
-        logo = Label(frame_about, image=img3, bg=color2)
-        logo.place(x=w / 2 - 128 / 2, y=60)
+        Frame(frame_about, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        back = Button(frame_about, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID, command=frame_about.destroy,
+                      activebackground=color4_topribbon, fg=color1_text)
+        back.place(x=10, y=2, width=45, height=25)
 
-        l1 = Label(frame_about, text='SkyNet Messenger (10.1.0.228-in)',bg=color2, font='calibri 12',fg=color1)
+        l1 = Label(frame_about, text='SkyNet Messenger (10.1.0.228-in)', bg=color2_litegrey, font='calibri 12', fg=color1_text)
         l1.place(x=w/2-200, y=200,width=400,height=25)
 
-        l2 = Label(frame_about, text='Copyright Notices',bg=color2, font='calibri 12',fg='blue')
+        l2 = Label(frame_about, text='Copyright Notices', bg=color2_litegrey, font='calibri 12', fg='blue')
         l2.place(x=w/2-200, y=250,width=400,height=25)
 
-        l3 = Label(frame_about, text='Privacy Policy', bg=color2, font='calibri 12', fg='blue')
+        l3 = Label(frame_about, text='Privacy Policy', bg=color2_litegrey, font='calibri 12', fg='blue')
         l3.place(x=w / 2 - 200, y=290, width=400, height=25)
 
-        l4 = Label(frame_about, text='Terms of Service', bg=color2, font='calibri 12', fg='blue')
+        l4 = Label(frame_about, text='Terms of Service', bg=color2_litegrey, font='calibri 12', fg='blue')
         l4.place(x=w / 2 - 200, y=330, width=400, height=25)
 
-        l5 = Label(frame_about, text='© 2020-2021 SkyNet Inc. All rights reserved. (India)', bg=color2, font='calibri 12', fg=color1)
-        l5.place(x=w / 2 - 200, y=h-100, width=400, height=25)
+        l5 = Label(frame_about, text='© 2020-2021 SkyNet Inc. All rights reserved. (India)', bg=color2_litegrey, font='calibri 12', fg=color1_text)
+        l5.place(x=w / 2 - 200, y=h-50, width=400, height=25)
 
     def help_page():
-        frame_help = Frame(window, bg=color2)
+        frame_help = Frame(window, bg=color2_litegrey)
         frame_help.place(x=0,y=0,width=w,height=h)
-        back = Button(frame_help, text='Back', bd=0, bg=color2, relief=SOLID, command=frame_help.destroy,
-                     activebackground=color2, fg=color1)
+        back = Button(frame_help, text='Back', bd=0, bg=color2_litegrey, relief=SOLID, command=frame_help.destroy,
+                      activebackground=color2_litegrey, fg=color1_text)
         back.place(x=0, y=2, width=45, height=25)
 
-        l1 = Label(frame_help, text='Service starting soon...', bg=color2, font='calibri 12', fg=color1)
+        l1 = Label(frame_help, text='Service starting soon...', bg=color2_litegrey, font='calibri 12', fg=color1_text)
         l1.place(x=w / 2 - 200, y=250, width=400, height=25)
 
     def forgot_page():
@@ -153,13 +164,22 @@ class Interface():
             Interface.reset_pass()
 
         global email_error, entry_email, send_email
-        frame_forgot = Frame(window, bg=color2)
+        frame_forgot = Frame(window, bg=color2_litegrey)
         frame_forgot.place(x=0, y=0, width=w, height=h)
 
-        logo = Label(frame_forgot, image=img, bg=color2)
-        logo.place(x=w / 2 - 128 / 2, y=60)
+        logo = Label(frame_forgot, image=logo_img, bg=color2_litegrey)
+        logo.place(x=w / 2 - 350 / 2, y=-35)
 
-        l1 = Label(frame_forgot, text='Enter your Email ID:', anchor='w', fg=color1, bg=color2)
+        def back_cmd2():
+            window.title("SkyNet Messenger")
+            frame_forgot.destroy()
+
+        Frame(frame_forgot, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        back = Button(frame_forgot, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID, command=back_cmd2,
+                      activebackground=color4_topribbon, fg=color1_text)
+        back.place(x=10, y=2, width=45, height=25)
+
+        l1 = Label(frame_forgot, text='Enter your Email ID:', anchor='w', fg=color1_text, bg=color2_litegrey)
         l1.place(x=w / 2 - 100, y=180 + 50, width=200, height=20)
 
         email_error = Label(frame_forgot, bd=0, bg='grey')
@@ -170,23 +190,15 @@ class Interface():
         entry_email.bind('<Button>', email_event)
         entry_email.bind('<Return>', bind_reset)
         send_email_error = Label(frame_forgot, bd=0, bg='grey')
-        send_email_error.place(x=w / 2 - 51, y=299, width=102, height=27)
+        send_email_error.place(x=w / 2 - 51, y=339, width=102, height=27)
 
-        send_email = Button(frame_forgot, text="Send email", fg='#5A6FFA', bg=color2, bd=0, activeforeground='blue',
-                            activebackground=color2, command=Interface.reset_pass)
-        send_email.place(x=w / 2 - 50, y=300, width=100, height=25)
-
-        def back_cmd2():
-            window.title("SkyNet Messenger")
-            frame_forgot.destroy()
-
-        back = Button(frame_forgot, text='Back', bd=0, bg=color2, relief=SOLID, command=back_cmd2,
-                      activebackground=color2, fg=color1)
-        back.place(x=0, y=2, width=45, height=25)
+        send_email = Button(frame_forgot, text="Send email", fg=color3_blue, bg=color2_litegrey, bd=0, activeforeground='blue',
+                            activebackground=color2_litegrey, command=Interface.reset_pass)
+        send_email.place(x=w / 2 - 50, y=340, width=100, height=25)
 
     def login():
-        signin.config(text='Checking...')
-        signin.update()
+        #signin.config(text='Checking...')
+        #signin.update()
         global crt_email, crt_password, empty, name_id
         username = entry1.get()
         password = entry2.get()
@@ -258,7 +270,7 @@ class Interface():
                 entry1_error.config(bg='red')
         else:
             print('FILL')
-        signin.config(text='Sign In')
+        #signin.config(text='Sign In')
 
     def reset_pass():
         email = entry_email.get()
@@ -275,7 +287,7 @@ class Interface():
 
     def main_console():
         window.title("SkyNet Messenger")
-        frame_console = Frame(window, bg=color2)
+        frame_console = Frame(window, bg=color2_litegrey)
         frame_console.place(x=0, y=0, width=w, height=h)
         global text_box, msg_box
 
@@ -288,8 +300,8 @@ class Interface():
         send_error = Label(frame_console, bd=0, bg='grey')
         send_error.place(x=w - 80 - 2, y=h - 25 - 20, width=72, height=30)
 
-        send = Button(frame_console, text="Send", fg='green', bg=color2, bd=0, activeforeground='dark green',
-                      activebackground=color2, command=Interface.send)
+        send = Button(frame_console, text="Send", fg='green', bg=color2_litegrey, bd=0, activeforeground='dark green',
+                      activebackground=color2_litegrey, command=Interface.send)
         send.place(x=w - 80 - 1, y=h - 25 - 19, width=70, height=28)
 
         scrollbar = Scrollbar(frame_console)
@@ -315,12 +327,13 @@ class Interface():
             Interface.read()
             reload.config(state=NORMAL)
 
-        logout = Button(frame_console, text='Logout', bd=0, bg=color2, relief=SOLID, command=logout_cmd,
-                        activebackground=color2, fg=color1)
+        Frame(frame_console, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        logout = Button(frame_console, text='Logout', bd=0, bg=color4_topribbon, relief=SOLID, command=logout_cmd,
+                        activebackground=color4_topribbon, fg=color1_text)
         logout.place(x=10, y=2, width=50, height=25)
 
-        reload = Button(frame_console, text='Reload', bd=0, bg=color2, relief=SOLID, command=reload_cmd,
-                        activebackground=color2, fg=color1)
+        reload = Button(frame_console, text='Reload', bd=0, bg=color4_topribbon, relief=SOLID, command=reload_cmd,
+                        activebackground=color4_topribbon, fg=color1_text)
         reload.place(x=70, y=2, width=50, height=25)
 
         Interface.read()
@@ -386,33 +399,32 @@ class Interface():
     def new_id():
         global img2, aentry1_error, aentry2_error, aentry3_error, aentry4_error, aentry1, aentry2, aentry3, aentry4, asignup, asignup_error
         window.title("SkyNet Messenger | New Account")
-        frame_new = Frame(window, bg=color2)
+        frame_new = Frame(window, bg=color2_litegrey)
         frame_new.place(x=0, y=0, width=w, height=h)
 
         def back_cmd1():
             window.title("SkyNet Messenger")
             frame_new.destroy()
 
-        back = Button(frame_new, text='Back', bd=0, bg=color2, relief=SOLID, command=back_cmd1,
-                      activebackground=color2, fg=color1)
-        back.place(x=0, y=2, width=45, height=25)
-
-        img2 = ImageTk.PhotoImage(Image.open("assets/space_ship.png"))
-        logo = Label(frame_new, image=img2, bg=color2)
-        logo.place(x=w / 2 - 128 / 2, y=60)
+        logo = Label(frame_new, image=logo_img, bg=color2_litegrey)
+        logo.place(x=w / 2 - 350 / 2, y=-35)
+        Frame(frame_new, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        back = Button(frame_new, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID, command=back_cmd1,
+                      activebackground=color4_topribbon, fg=color1_text)
+        back.place(x=10, y=2, width=45, height=25)
 
         sub_y = 50
 
-        l1 = Label(frame_new, text='Name:', bg=color2, fg=color1, anchor='w')
+        l1 = Label(frame_new, text='Name:', bg=color2_litegrey, fg=color1_text, anchor='w')
         l1.place(x=w / 2 - 100, y=180 + sub_y, width=200, height=20)
 
-        l2 = Label(frame_new, text='Email Id:', bg=color2, anchor='w', fg=color1)
+        l2 = Label(frame_new, text='Email Id:', bg=color2_litegrey, anchor='w', fg=color1_text)
         l2.place(x=w / 2 - 100, y=230 + sub_y, width=200, height=20)
 
-        l3 = Label(frame_new, text='SkyNet ID:', bg=color2, anchor='w', fg=color1)
+        l3 = Label(frame_new, text='SkyNet ID:', bg=color2_litegrey, anchor='w', fg=color1_text)
         l3.place(x=w / 2 - 100, y=280 + sub_y, width=200, height=20)
 
-        l4 = Label(frame_new, text='Password:', bg=color2, anchor='w', fg=color1)
+        l4 = Label(frame_new, text='Password:', bg=color2_litegrey, anchor='w', fg=color1_text)
         l4.place(x=w / 2 - 100, y=330 + sub_y, width=200, height=20)
 
         ###############################
@@ -456,8 +468,8 @@ class Interface():
         asignup_error = Label(frame_new, bd=0, bg='grey')
         asignup_error.place(x=w / 2 - 51, y=424 + sub_y, width=102, height=27)
 
-        asignup = Button(frame_new, text='Sign Up', fg='#5A6FFA', bg=color2, bd=0, activeforeground='blue',
-                         activebackground=color2, command=Interface.signup)
+        asignup = Button(frame_new, text='Sign Up', fg='#5A6FFA', bg=color2_litegrey, bd=0, activeforeground='blue',
+                         activebackground=color2_litegrey, command=Interface.signup)
         asignup.place(x=w / 2 - 50, y=425 + sub_y, width=100, height=25)
 
     def signup():
