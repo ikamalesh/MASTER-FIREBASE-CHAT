@@ -1,10 +1,12 @@
+<img width="200" src="https://raw.githubusercontent.com/ikamalesh/skynet-firebasechatbox/main/assets/alien_head.png" alt="logo">
+
+
+
+
+
 # SkyNet Messenger (One-room)
 ### Working on Multi Chatrooms...
-<br></br>
-Modules used
-1. Pyrebase  4.5.0  ( pip install Pyrebase4 ) https://github.com/thisbejim/Pyrebase
-2. Pillow           ( pip install pillow )
-
+# Getting Started 
 
 ## Screenshots
 
