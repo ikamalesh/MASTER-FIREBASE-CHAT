@@ -6,7 +6,7 @@ import pyrebase
 from PIL import Image, ImageTk
 
 
-with open('firebase.json','r') as c:
+with open('assets/firebase.json', 'r') as c:
     firebaseConfig = json.load(c)
 firebase = pyrebase.initialize_app(firebaseConfig)
 
@@ -25,7 +25,7 @@ class Interface():
 
     def login_page():
         global img, access, entry1, entry2, color1, color2, entry1_error, entry2_error, signin
-        img = ImageTk.PhotoImage(Image.open("others/alien_head.png"))
+        img = ImageTk.PhotoImage(Image.open("assets/alien_head.png"))
         sub_y = 50
         color1, color2 = '#191919', '#EDF1F4'
         frame_login = Frame(window, bg=color2)
@@ -90,7 +90,7 @@ class Interface():
         help = Button(frame_login, text='Help', bd=0, bg=color2, relief=SOLID, activebackground=color2,command=Interface.help_page)
         help.place(x=46, y=2, width=45, height=25)
 
-        with open('cred.json') as data_file:
+        with open('assets/cred.json') as data_file:
             data_loaded = json.load(data_file)
         if data_loaded['cred'] == True:
             entry1.insert(0, data_loaded['id'])
@@ -106,7 +106,7 @@ class Interface():
                      activebackground=color2, fg=color1)
         back.place(x=0, y=2, width=45, height=25)
 
-        img3 = ImageTk.PhotoImage(Image.open("others/space_ship.png"))
+        img3 = ImageTk.PhotoImage(Image.open("assets/space_ship.png"))
         logo = Label(frame_about, image=img3, bg=color2)
         logo.place(x=w / 2 - 128 / 2, y=60)
 
@@ -238,7 +238,7 @@ class Interface():
                         line = {"cred": True, "id": username, "password": password}
                     else:
                         line = {"cred": False}
-                    with open('cred.json', 'w') as f:
+                    with open('assets/cred.json', 'w') as f:
                         json.dump(line, f)
                     print('APPROVED')
                     print('username', name_id)
@@ -389,7 +389,7 @@ class Interface():
                       activebackground=color2, fg=color1)
         back.place(x=0, y=2, width=45, height=25)
 
-        img2 = ImageTk.PhotoImage(Image.open("others/space_ship.png"))
+        img2 = ImageTk.PhotoImage(Image.open("assets/space_ship.png"))
         logo = Label(frame_new, image=img2, bg=color2)
         logo.place(x=w / 2 - 128 / 2, y=60)
 
