@@ -28,7 +28,7 @@ class Interface():
 
     def login_page():
         global logo_img, access, entry1, entry2, color1_text, color2_litegrey, color3_blue, \
-            color4_topribbon, entry1_error, entry2_error, signin, but_img, button_login
+            color4_topribbon, entry1_error, entry2_error, signin, but_img, login_button
         logo_img = Image.open(ASSETS_PATH / "2/skynet-logos_black.png")
         logo_img = logo_img.resize((350, 350))
         logo_img = ImageTk.PhotoImage(logo_img)
@@ -113,8 +113,8 @@ class Interface():
         but_img = Image.open(ASSETS_PATH / "button2.png")
         ref = 150
         but_img = ImageTk.PhotoImage(but_img)
-        button_login = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=logics.login)
-        button_login.place(x=w / 2 - ref / 2, y=h - 155)
+        login_button = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=Interface.profile_page())
+        login_button.place(x=w / 2 - ref / 2, y=h - 155)
 
     def about_page():
         global img3
@@ -339,6 +339,71 @@ class Interface():
                 pass
 
         window.protocol("WM_DELETE_WINDOW", on_closing)
+
+    def profile_page():
+        frame_profile = Frame(window, bg=color2_litegrey)
+        frame_profile.place(x=0,y=0,width=w,height=h)
+
+        class VerticalScrolledFrame(Frame):
+            """A pure Tkinter scrollable frame that actually works!
+
+            * Use the 'interior' attribute to place widgets inside the scrollable frame
+            * Construct and pack/place/grid normally
+            * This frame only allows vertical scrolling
+            """
+
+            def __init__(self, parent, *args, **kw):
+                Frame.__init__(self, parent, *args, **kw)
+
+                # create a canvas object and a vertical scrollbar for scrolling it
+                vscrollbar = Scrollbar(self, orient=VERTICAL)
+                vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
+                canvas = Canvas(self, bd=0, highlightthickness=0,
+                                   yscrollcommand=vscrollbar.set)
+                canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
+                vscrollbar.config(command=canvas.yview)
+
+                # reset the view
+                canvas.xview_moveto(0)
+                canvas.yview_moveto(0)
+
+                # create a frame inside the canvas which will be scrolled with it
+                self.interior = interior = Frame(canvas, bg=color2_litegrey)
+                interior_id = canvas.create_window(0, 0, window=interior,
+                                                   anchor=NW)
+
+                # track changes to the canvas and frame width and sync them,
+                # also updating the scrollbar
+                def _configure_interior(event):
+                    # update the scrollbars to match the size of the inner frame
+                    size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+                    canvas.config(scrollregion="0 0 %s %s" % size)
+                    if interior.winfo_reqwidth() != canvas.winfo_width():
+                        # update the canvas's width to fit the inner frame
+                        canvas.config(width=interior.winfo_reqwidth())
+
+                interior.bind('<Configure>', _configure_interior)
+
+                def _configure_canvas(event):
+                    if interior.winfo_reqwidth() != canvas.winfo_width():
+                        # update the inner frame's width to fill the canvas
+                        canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+
+                canvas.bind('<Configure>', _configure_canvas)
+
+        scframe = VerticalScrolledFrame(frame_profile,)
+        scframe.place(x=10, y=50,width=300)
+
+        lis = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        for i, x in enumerate(lis):
+            btn = Button(scframe.interior, height=1, width=30, relief=FLAT, bd=1,
+                            bg='lightgreen', fg="black",
+                            text='Button ' + lis[i],
+                            command=lambda i=i, x=x: openlink(i))
+            btn.pack(padx=10, pady=5, side=TOP)
+
+        def openlink(i):
+            print(lis[i])
 
 
 class logics():
