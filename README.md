@@ -1,5 +1,5 @@
 SKYNET MESSENGER
-Version 1.5
+Version 2.0
 
 Features<br>
 1. One chatroom messenger
