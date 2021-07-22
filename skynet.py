@@ -41,7 +41,6 @@ class Interface():
 
         logo = Label(frame_login, image=logo_img, bg=color2_litegrey)
         logo.place(x=w / 2 - 350 / 2, y=-35)
-        #logo.place(x=w / 2 - 128 / 2, y=60)
 
         Frame(frame_login, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
 
@@ -111,7 +110,6 @@ class Interface():
         global but_img,logo1
         but_img = Image.open(ASSETS_PATH / "button2.png")
         ref = 150
-        #but_img = but_img.resize((ref, 40))
         but_img = ImageTk.PhotoImage(but_img)
         logo1 = Button(frame_login, image=but_img, bg=color2_litegrey,bd=0,command=Interface.login)
         logo1.place(x=w / 2 - ref / 2, y=h-155)
@@ -147,9 +145,11 @@ class Interface():
     def help_page():
         frame_help = Frame(window, bg=color2_litegrey)
         frame_help.place(x=0,y=0,width=w,height=h)
-        back = Button(frame_help, text='Back', bd=0, bg=color2_litegrey, relief=SOLID, command=frame_help.destroy,
-                      activebackground=color2_litegrey, fg=color1_text)
-        back.place(x=0, y=2, width=45, height=25)
+
+        Frame(frame_help, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        back = Button(frame_help, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID, command=frame_help.destroy,
+                      activebackground=color4_topribbon, fg=color1_text)
+        back.place(x=10, y=2, width=45, height=25)
 
         l1 = Label(frame_help, text='Service starting soon...', bg=color2_litegrey, font='calibri 12', fg=color1_text)
         l1.place(x=w / 2 - 200, y=250, width=400, height=25)
@@ -199,49 +199,40 @@ class Interface():
     def login():
         #signin.config(text='Checking...')
         #signin.update()
-        global crt_email, crt_password, empty, name_id
-        username = entry1.get()
+        global crt_email, crt_password, empty, final_id, final_name
+        user_entry = entry1.get()
         password = entry2.get()
         crt_email = False
         crt_password = False
         empty = False
-        if username != '' and password != '':
-            if '@' in username:  # EMAIL ID
-                email_id = username
-                map_get = db.child('map').child(email_id.replace('.', '<dot>')).get().val()
-                if map_get != None:
-                    name_id = db.child('user_details').child(map_get).child('name').get().val()
-                    # print('Email OK')
+
+        if user_entry != '' and password != '':
+            if '@' in user_entry:  # user_entry = EMAIL ID
+                email_id = user_entry
+                map_get_id = db.child('map').child(email_id.replace('.', '<dot>')).get().val()
+                if map_get_id != None:
+                    final_id = map_get_id  # returning id to display
                     crt_email = True
-                    # print('Checking Password')
                     try:
                         auth.sign_in_with_email_and_password(email_id, password)
-                        # print('Password OK')
                         crt_password = True
                     except:
-                        # print('Password NOT OK')
                         crt_password = False
                 else:
-                    # print('Email NOT OK')
                     crt_email = False
 
-            else:  # SKYNET ID
+            else:  # user_entry = SKYNET ID
                 try:
-                    email_id = db.child('user_details').child(username).child('email').get().val()
+                    email_id = db.child('user_details').child(user_entry).child('email').get().val()
                     if email_id != None:
-                        name_id = db.child('user_details').child(username).child('name').get().val()
-                        # print('Email OK')
+                        final_id = user_entry  # returning id to display
                         crt_email = True
-                        # print('Checking Password')
                         try:
                             auth.sign_in_with_email_and_password(email_id, password)
-                            # print('Password OK')
                             crt_password = True
                         except:
-                            # print('Password NOT OK')
                             crt_password = False
                     else:
-                        # print('Email NOT OK')
                         crt_email = False
                 except:
                     crt_email = False
@@ -255,15 +246,17 @@ class Interface():
                     entry1_error.config(bg='grey')
                     entry2_error.config(bg='grey')
                     if access.get() == True:
-                        line = {"cred": True, "id": username, "password": password}
+                        line = {"cred": True, "id": user_entry, "password": password}
                     else:
                         line = {"cred": False}
                     with open('assets/cred.json', 'w') as f:
                         json.dump(line, f)
                     print('APPROVED')
-                    print('username', name_id)
+                    print('username', final_id)
                     entry1.delete(0, END), entry2.delete(0, END)
                     Interface.main_console()
+                    final_name = db.child('user_details').child(final_id).child('name').get().val()  # returning name to display
+                    window.title(f"SkyNet Messenger | Welcome {final_name}")
                 else:
                     entry2_error.config(bg='red')
             else:
@@ -316,6 +309,7 @@ class Interface():
             if v == True:
                 my_stream.close()
                 frame_console.destroy()
+                window.title("SkyNet Messenger")
             else:
                 pass
 
@@ -352,7 +346,7 @@ class Interface():
         if msg != '':
             now = datetime.now()
             time = now.strftime("%H:%M %d/%m/%Y")
-            final = f"{time} {f'{name_id}': >15}: {msg}"
+            final = f"{time} {f'{final_id}' : >15} : {msg}"
             db.child('messages').push(final)
 
     def read():
@@ -394,7 +388,7 @@ class Interface():
                 except TypeError:
                     pass
 
-        my_stream = db.child("messages").stream(stream_handler,stream_id=name_id)
+        my_stream = db.child("messages").stream(stream_handler, stream_id=final_id)
 
     def new_id():
         global img2, aentry1_error, aentry2_error, aentry3_error, aentry4_error, aentry1, aentry2, aentry3, aentry4, asignup, asignup_error
