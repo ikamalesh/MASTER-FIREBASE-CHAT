@@ -1,10 +1,11 @@
 import json
 from datetime import datetime
+from pathlib import Path
 from tkinter import *
 from tkinter import messagebox
+
 import pyrebase
 from PIL import Image, ImageTk
-from pathlib import Path
 
 # Path to asset files for this GUI window.
 ASSETS_PATH = Path(__file__).resolve().parent / "assets"
@@ -37,7 +38,7 @@ class Interface():
             logics.login()
 
         global logo_img, access, entry1, entry2, color1_text, color2_litegrey, color3_blue, \
-            color4_topribbon, entry1_error, entry2_error, signin, but_img, login_button
+            color4_topribbon, entry1_error, entry2_error, signin, but_img, sign_in_button
         logo_img = Image.open(ASSETS_PATH / "2/skynet-logos_black.png")
         logo_img = logo_img.resize((350, 350))
         logo_img = ImageTk.PhotoImage(logo_img)
@@ -113,8 +114,11 @@ class Interface():
         but_img = Image.open(ASSETS_PATH / "button2.png")
         ref = 150
         but_img = ImageTk.PhotoImage(but_img)
-        login_button = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=Interface.profile_page)
-        login_button.place(x=w / 2 - ref / 2, y=h - 155)
+        global final_id
+        final_id = 'ikamalesh_'  #
+        Main_Console.main_console()  #
+        sign_in_button = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=Main_Console.profile_page)
+        sign_in_button.place(x=w / 2 - ref / 2, y=h - 155)
 
     def about_page():
         global img3
@@ -276,108 +280,6 @@ class Interface():
                          activebackground=color2_litegrey, command=logics.signup)
         asignup.place(x=w / 2 - 50, y=425 + sub_y, width=100, height=25)
 
-    def main_console():
-        window.title("SkyNet Messenger")
-        frame_console = Frame(window, bg=color2_litegrey)
-        frame_console.place(x=0, y=0, width=w, height=h)
-        global text_box, msg_box
-
-        def bind_send(e):
-            logics.send()
-
-        msg_box = Entry(frame_console, bd=1, relief=SOLID)
-        msg_box.place(x=10, y=h - 25 - 20, width=w - 100, height=30)
-        msg_box.bind('<Return>', bind_send)
-        send_error = Label(frame_console, bd=0, bg='grey')
-        send_error.place(x=w - 80 - 2, y=h - 25 - 20, width=72, height=30)
-
-        send = Button(frame_console, text="Send", fg='green', bg=color2_litegrey, bd=0, activeforeground='dark green',
-                      activebackground=color2_litegrey, command=logics.send)
-        send.place(x=w - 80 - 1, y=h - 25 - 19, width=70, height=28)
-
-        scrollbar = Scrollbar(frame_console)
-        text_box = Text(frame_console, height=10, width=10, yscrollcommand=scrollbar.set, bd=1, relief=SOLID,
-                        selectbackground='white', selectforeground='black', cursor='arrow')
-        text_box.place(x=10, y=50, width=w - 20 - 10, height=h - 120)
-
-        scrollbar.config(command=text_box.yview)
-        scrollbar.place(x=w - 10 - 10, y=50, width=20, height=h - 120)
-
-        def logout_cmd():
-            v = messagebox.askokcancel('Confirm', 'Are you sure you want to logout now?')
-            if v == True:
-                my_stream.close()
-                frame_console.destroy()
-                window.title("SkyNet Messenger")
-            else:
-                pass
-
-        def reload_cmd():
-            global first_iter, my_stream
-
-            reload.config(state=DISABLED)
-            my_stream.close()
-            first_iter = True
-            logics.read()
-            reload.config(state=NORMAL)
-
-        Frame(frame_console, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
-        logout = Button(frame_console, text='Logout', bd=0, bg=color4_topribbon, relief=SOLID, command=logout_cmd,
-                        activebackground=color4_topribbon, fg=color1_text)
-        logout.place(x=10, y=2, width=50, height=25)
-
-        reload = Button(frame_console, text='Reload', bd=0, bg=color4_topribbon, relief=SOLID, command=reload_cmd,
-                        activebackground=color4_topribbon, fg=color1_text)
-        reload.place(x=70, y=2, width=50, height=25)
-
-        logics.read()
-
-        def on_closing():
-            if messagebox.askokcancel('Confirm', 'Are you sure you want to exit now?'):
-                window.destroy()
-            else:
-                pass
-
-        window.protocol("WM_DELETE_WINDOW", on_closing)
-
-    def profile_page():
-        global meet_img, meet
-        frame_profile = Frame(window, bg=color2_litegrey)
-        frame_profile.place(x=0, y=0, width=w, height=h)
-
-
-        meet_img = Image.open(ASSETS_PATH / "6/Share your thoughts!-logos_transparent.png")
-        meet_img = meet_img.resize((700, 700))
-        meet_img = ImageTk.PhotoImage(meet_img)
-        meet = Label(frame_profile, image=meet_img, bg=color2_litegrey)
-        meet.place(x=-150, y=h/2-340)
-
-        Frame(frame_profile, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
-        back = Button(frame_profile, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID, command=frame_profile.destroy,
-                      activebackground=color4_topribbon, fg=color1_text)
-        back.place(x=10, y=2, width=45, height=25)
-
-        sub_y = 10
-
-        l1 = Label(frame_profile, text='Room ID:', bg=color2_litegrey, fg=color1_text, anchor='w')
-        l1.place(x=w / 2 - 50, y=50 + sub_y, width=200, height=20)
-
-        room_error = Label(frame_profile, bd=0, bg='grey')
-        room_error.place(x=w / 2 - 51, y=69 + sub_y, width=202, height=25)
-        room_entry = Entry(frame_profile, bd=0, relief=SOLID)
-        room_entry.place(x=w / 2 - 50 , y=70 + sub_y, width=200, height=23)
-
-        room_join_error = Label(frame_profile, bd=0, bg='grey')
-        room_join_error.place(x=609, y=69 + sub_y, width=72, height=25)
-        room_join = Button(frame_profile, text='Join', fg=color3_blue, bg=color2_litegrey, bd=0, activeforeground='blue',
-                       activebackground=color2_litegrey)
-        room_join.place(x=610, y=70 + sub_y, width=70, height=23)
-
-        list = ['kaalesh','sri priya','sarveswaran']
-
-
-
-
 
 class logics():
     def send():
@@ -538,7 +440,7 @@ class logics():
                     print('APPROVED')
                     print('username', final_id)
                     entry1.delete(0, END), entry2.delete(0, END)
-                    Interface.main_console()
+                    Main_Console.main_console()
                     final_name = db.child('user_details').child(final_id).child(
                         'name').get().val()  # returning name to display
                     window.title(f"SkyNet Messenger | Welcome {final_name}")
@@ -562,6 +464,214 @@ class logics():
                 email_error.config(bg='red')
         else:
             email_error.config(bg='red')
+
+
+class Main_Console():
+    def main_console():
+        def bind_send(e):
+            logics.send()
+
+        def logout_cmd():
+            v = messagebox.askokcancel('Confirm', 'Are you sure you want to logout now?')
+            if v == True:
+                my_stream.close()
+                frame_console.destroy()
+                window.title("SkyNet Messenger")
+            else:
+                pass
+
+        def reload_cmd():
+            global first_iter, my_stream
+
+            reload.config(state=DISABLED)
+            my_stream.close()
+            first_iter = True
+            logics.read()
+            reload.config(state=NORMAL)
+
+        def on_closing():
+            if messagebox.askokcancel('Confirm', 'Are you sure you want to exit now?'):
+                window.destroy()
+            else:
+                pass
+
+        window.title("SkyNet Messenger")
+        frame_console = Frame(window, bg=color2_litegrey)
+        frame_console.place(x=0, y=0, width=w, height=h)
+        global text_box, msg_box, create_button
+
+        msg_box = Entry(frame_console, bd=1, relief=SOLID)
+        msg_box.place(x=10 + 200, y=h - 25 - 20, width=w - 100 - 200, height=30)
+        msg_box.bind('<Return>', bind_send)
+        send_error = Label(frame_console, bd=0, bg='grey')
+        send_error.place(x=w - 80 - 2, y=h - 25 - 20, width=72, height=30)
+
+        send = Button(frame_console, text="Send", fg='green', bg=color2_litegrey, bd=0, activeforeground='dark green',
+                      activebackground=color2_litegrey, command=logics.send)
+        send.place(x=w - 80 - 1, y=h - 25 - 19, width=70, height=28)
+
+        scrollbar = Scrollbar(frame_console)
+        text_box = Text(frame_console, height=10, width=10, yscrollcommand=scrollbar.set, bd=1, relief=SOLID,
+                        selectbackground='white', selectforeground='black', cursor='arrow')
+        text_box.place(x=10 + 200, y=50 + 30, width=w - 20 - 10 - 200, height=h - 120 - 30)
+
+        scrollbar.config(command=text_box.yview)
+        scrollbar.place(x=w - 10 - 10, y=50 + 30, width=20, height=h - 120 - 30)
+
+        list_box = Listbox(frame_console, relief=SOLID, activestyle='none', font='Helvetica 14', bd=0,
+                           bg=color2_litegrey, selectbackground=color2_litegrey, selectforeground='red')
+        list_box.place(x=10, y=50 + 30, width=190, height=h - 80 - 15)
+
+        Frame(frame_console, bg=color2_litegrey).place(x=10, y=80, width=1, height=h - 80 - 15)
+        Frame(frame_console, bg=color2_litegrey).place(x=199, y=80, width=1, height=h - 80 - 15)
+        Frame(frame_console, bg=color2_litegrey).place(x=10, y=80, width=190, height=1)
+        Frame(frame_console, bg=color2_litegrey).place(x=10, y=h - 16, width=190, height=1)
+
+        ###
+        Frame(frame_console, bg=color4_topribbon).place(x=0, y=0, width=w, height=35)
+        logout = Button(frame_console, text='Logout', bd=0, bg=color4_topribbon, relief=SOLID, command=logout_cmd,
+                        activebackground=color4_topribbon, fg=color1_text)
+        logout.place(x=10, y=5, width=50, height=25)
+
+        reload = Button(frame_console, text='Reload', bd=0, bg=color4_topribbon, relief=SOLID, command=reload_cmd,
+                        activebackground=color4_topribbon, fg=color1_text)
+        reload.place(x=70, y=5, width=50, height=25)
+        window.protocol("WM_DELETE_WINDOW", on_closing)
+        sub_y = 0
+
+        room_error = Label(frame_console, bd=0, bg='grey')
+        room_error.place(x=480, y=5 + sub_y, width=202, height=25)
+        room_entry = Entry(frame_console, bd=0, relief=SOLID)
+        room_entry.place(x=481, y=6 + sub_y, width=200, height=23)
+
+        room_join_error = Label(frame_console, bd=0, bg='grey')
+        room_join_error.place(x=689, y=5 + sub_y, width=72, height=25)
+        room_join = Button(frame_console, text='Join', fg=color3_blue, bg=color2_litegrey, bd=0,
+                           activeforeground='blue', activebackground=color2_litegrey)
+        room_join.place(x=690, y=6 + sub_y, width=70, height=23)
+
+        create_error = Label(frame_console, bd=0, bg='grey')
+        create_error.place(x=793, y=5 + sub_y, width=92, height=25)
+        create_button = Button(frame_console, text='Create Room', fg='green', bg=color2_litegrey, bd=0,
+                               activeforeground='dark green', activebackground=color2_litegrey,
+                               command=Main_Console.create_room_window)
+        create_button.place(x=794, y=6 + sub_y, width=90, height=23)
+        ###
+        logics.read()
+
+        list_box.insert(END, 'Kamalesh')
+
+    def profile_page():
+        global meet_img, meet, create_button
+        frame_profile = Frame(window, bg=color2_litegrey)
+        frame_profile.place(x=0, y=0, width=w, height=h)
+
+        meet_img = Image.open(ASSETS_PATH / "6/Share your thoughts!-logos_transparent.png")
+        meet_img = meet_img.resize((700, 700))
+        meet_img = ImageTk.PhotoImage(meet_img)
+        meet = Label(frame_profile, image=meet_img, bg=color2_litegrey)
+        meet.place(x=-150, y=h / 2 - 340)
+
+        Frame(frame_profile, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
+        back = Button(frame_profile, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID,
+                      command=frame_profile.destroy,
+                      activebackground=color4_topribbon, fg=color1_text)
+        back.place(x=10, y=2, width=45, height=25)
+
+        sub_y = 10
+
+        l1 = Label(frame_profile, text='Room ID:', bg=color2_litegrey, fg=color1_text, anchor='w')
+        l1.place(x=w / 2 - 50, y=50 + sub_y, width=200, height=20)
+
+        room_error = Label(frame_profile, bd=0, bg='grey')
+        room_error.place(x=w / 2 - 51, y=69 + sub_y, width=202, height=25)
+        room_entry = Entry(frame_profile, bd=0, relief=SOLID)
+        room_entry.place(x=w / 2 - 50, y=70 + sub_y, width=200, height=23)
+
+        room_join_error = Label(frame_profile, bd=0, bg='grey')
+        room_join_error.place(x=609, y=69 + sub_y, width=72, height=25)
+        room_join = Button(frame_profile, text='Join', fg=color3_blue, bg=color2_litegrey, bd=0,
+                           activeforeground='blue',
+                           activebackground=color2_litegrey)
+        room_join.place(x=610, y=70 + sub_y, width=70, height=23)
+
+        create_error = Label(frame_profile, bd=0, bg='grey')
+        create_error.place(x=689, y=69 + sub_y, width=92, height=25)
+        create_button = Button(frame_profile, text='Create Room', fg=color3_blue, bg=color2_litegrey, bd=0,
+                               activeforeground='blue',
+                               activebackground=color2_litegrey, command=Main_Console.create_room_window)
+        create_button.place(x=690, y=70 + sub_y, width=90, height=23)
+
+    def create_room_window():
+        def on_closing():
+            create_button.config(state=NORMAL)
+            window_create.destroy()
+
+        def fun():
+            if password.get():  # True
+                pass_option.config(image=lock_img)
+                l2.place(x=w1 / 2 - 100, y=80 + sub_y, width=200, height=20)
+                entry2_error.place(x=w1 / 2 - 101, y=99 + sub_y, width=202, height=25)
+                entry2.place(x=w1 / 2 - 100, y=100 + sub_y, width=200, height=23)
+                create_main_error.place(x=w1 / 2 - 51, y=149 + sub_y, width=102, height=27)
+                create_main.place(x=w1 / 2 - 50, y=150 + sub_y, width=100, height=25)
+            else:  # False
+                pass_option.config(image=lockopen_img)
+                l2.place(x=- 1000, y=80 + sub_y, width=200, height=20)
+                entry2_error.place(x=- 1001, y=99 + sub_y, width=202, height=25)
+                entry2.place(x=- 1000, y=100 + sub_y, width=200, height=23)
+                create_main_error.place(x=w1 / 2 - 51, y=99 + sub_y, width=102, height=27)
+                create_main.place(x=w1 / 2 - 50, y=100 + sub_y, width=100, height=25)
+
+        create_button.config(state=DISABLED)
+        window_create = Toplevel(window)
+        w1, h1 = 500, 300
+        sub_y = 0
+        x = window.winfo_x()
+        y = window.winfo_y()
+        window_create.geometry(f'{w1}x{h1}+{x + 775}+{y + 33}')
+        window_create.protocol("WM_DELETE_WINDOW", on_closing)
+        window_create.title('Create Room')
+        frame_create = Frame(window_create, bg=color2_litegrey)
+        frame_create.place(x=0, y=0, width=500, height=300)
+
+        l1 = Label(window_create, text='Room Title:', anchor='w', bg=color2_litegrey, fg=color1_text, ).place(
+            x=w1 / 2 - 100,
+            y=30 + sub_y,
+            width=200,
+            height=20)
+        l2 = Label(window_create, text='Password:', anchor='w', bg=color2_litegrey, fg=color1_text, )
+
+        entry1_error = Label(window_create, bd=0, bg='grey')
+        entry1_error.place(x=w1 / 2 - 101, y=49 + sub_y, width=202, height=25)
+
+        entry1 = Entry(window_create, bd=0, relief=SOLID)
+        entry1.place(x=w1 / 2 - 100, y=50 + sub_y, width=200, height=23)
+
+        entry2_error = Label(window_create, bd=0, bg='grey')
+
+        entry2 = Entry(window_create, bd=0, relief=SOLID)
+
+        lock_img = Image.open(ASSETS_PATH / "lock.png")
+        lock_img = lock_img.resize((30, 30))
+        lock_img = ImageTk.PhotoImage(lock_img)
+
+        lockopen_img = Image.open(ASSETS_PATH / "lock_open.png")
+        lockopen_img = lockopen_img.resize((30, 30))
+        lockopen_img = ImageTk.PhotoImage(lockopen_img)
+
+        password = BooleanVar()
+        pass_option = Checkbutton(frame_create, image=lockopen_img, anchor='w', fg='black',
+                                  activebackground=color2_litegrey, activeforeground='black',
+                                  variable=password, bd=0, bg=color2_litegrey, command=fun)
+        pass_option.place(x=w1 / 2 + 82, y=sub_y + 45, width=50, height=30)
+
+        create_main_error = Label(frame_create, bd=0, bg='grey')
+        create_main_error.place(x=w1 / 2 - 51, y=99 + sub_y, width=102, height=27)
+        create_main = Button(frame_create, text='Create', fg='#5A6FFA', bg=color2_litegrey, bd=0,
+                             activeforeground='blue',
+                             activebackground=color2_litegrey)
+        create_main.place(x=w1 / 2 - 50, y=100 + sub_y, width=100, height=25)
 
 
 if __name__ == '__main__':
