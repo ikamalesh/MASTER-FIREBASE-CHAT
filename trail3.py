@@ -1,4 +1,5 @@
 import pyrebase
+
 firebaseConfig = {
     "apiKey": "AIzaSyBlB2OBLZU3ku6-CjGZmdsNY_ujSw5aC-U",
     "authDomain": "noted-flash-306012.firebaseapp.com",
@@ -10,16 +11,13 @@ firebaseConfig = {
 }
 firebase = pyrebase.initialize_app(firebaseConfig)
 
-db= firebase.database()
+db = firebase.database()
 
 
-data = {
-    'admin':'ikamalesh_',
-    'public':False,
-    'participants':['ikamalesh_','cms_kamalesh','ipriya_']
-}
-#db.child('rooms').child('my family').set(data)
-f = db.child('rooms').child('my family').child('participants').get().val()
-f.append('max')
-print(f)
-db.child('rooms').child('my family').child('participants').set()
+
+
+def stream_handler(message):
+    g = message['data']
+    print(list(g))
+
+my_groups_stream = db.child('user_details').child("ikamalesh_").child('rooms').stream(stream_handler)

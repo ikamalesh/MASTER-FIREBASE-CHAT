@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from tkinter import *
 from tkinter import messagebox
-
+import random
 import pyrebase
 from PIL import Image, ImageTk
 
@@ -35,7 +35,7 @@ class Interface():
             entry2_error.config(bg='grey')
 
         def login_bind(event):
-            logics.login()
+            onetime_logics.login()
 
         global logo_img, access, entry1, entry2, color1_text, color2_litegrey, color3_blue, \
             color4_topribbon, entry1_error, entry2_error, signin, but_img, sign_in_button
@@ -115,9 +115,9 @@ class Interface():
         ref = 150
         but_img = ImageTk.PhotoImage(but_img)
         global final_id
-        final_id = 'ikamalesh_'  #
-        Main_Console.main_console()  #
-        sign_in_button = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=Main_Console.profile_page)
+        # final_id = 'ikamalesh_'  #
+        # Main_Console.main_console()  #
+        sign_in_button = Button(frame_login, image=but_img, bg=color2_litegrey, bd=0, command=onetime_logics.login)
         sign_in_button.place(x=w / 2 - ref / 2, y=h - 155)
 
     def about_page():
@@ -168,7 +168,7 @@ class Interface():
             email_error.config(bg='grey')
 
         def bind_reset(event):
-            logics.reset_pass()
+            onetime_logics.reset_pass()
 
         global email_error, entry_email, send_email
         frame_forgot = Frame(window, bg=color2_litegrey)
@@ -201,7 +201,7 @@ class Interface():
 
         send_email = Button(frame_forgot, text="Send email", fg=color3_blue, bg=color2_litegrey, bd=0,
                             activeforeground='blue',
-                            activebackground=color2_litegrey, command=logics.reset_pass)
+                            activebackground=color2_litegrey, command=onetime_logics.reset_pass)
         send_email.place(x=w / 2 - 50, y=340, width=100, height=25)
 
     def new_id_page():
@@ -277,11 +277,11 @@ class Interface():
         asignup_error.place(x=w / 2 - 51, y=424 + sub_y, width=102, height=27)
 
         asignup = Button(frame_new, text='Sign Up', fg='#5A6FFA', bg=color2_litegrey, bd=0, activeforeground='blue',
-                         activebackground=color2_litegrey, command=logics.signup)
+                         activebackground=color2_litegrey, command=onetime_logics.signup)
         asignup.place(x=w / 2 - 50, y=425 + sub_y, width=100, height=25)
 
 
-class logics():
+class onetime_logics():
     def send():
         global sent
         sent = True
@@ -290,49 +290,7 @@ class logics():
             now = datetime.now()
             time = now.strftime("%H:%M %d/%m/%Y")
             final = f"{time} {f'{final_id}' : >15} : {msg}"
-            db.child('messages').push(final)
-
-    def read():
-        global first_iter, my_stream
-        first_iter = True
-
-        def stream_handler(message):
-            global first_iter, sent
-            # print('25', message)
-            data = message["data"]
-            # print('27', data)  # {'title': 'Pyrebase', "body": "etc..."}
-
-            if first_iter == False:
-                # print('30', data)
-                text_box.config(state=NORMAL)
-                text_box.insert(END, f"{data}\n")
-                text_box.see(END)
-                text_box.config(state=DISABLED)
-                try:
-                    if sent == True:
-                        msg_box.delete(0, END)
-                        sent = False
-                    else:
-                        pass
-                except:
-                    pass
-            if first_iter == True:
-                try:
-                    text_box.config(state=NORMAL)
-                    text_box.delete(1.0, END)
-                    text_box.config(state=DISABLED)
-                    for item in data:
-                        # print('35', data[item])
-                        text_box.config(state=NORMAL)
-                        text_box.insert(END, f"{data[item]}\n")
-                        text_box.see(END)
-                        text_box.config(state=DISABLED)
-                    first_iter = False
-                except TypeError:
-                    first_iter = False
-                    pass
-
-        my_stream = db.child("messages").stream(stream_handler, stream_id=final_id)
+            db.child('rooms').child(selected_group).child('messages').push(final)
 
     def signup():
         global proceed_signup
@@ -465,28 +423,45 @@ class logics():
         else:
             email_error.config(bg='red')
 
+    def create_room():
+        global is_password
+        title = title_entry.get()
+        password = password_entry.get()
+        if password == "":
+            is_password = False
+        else:
+            is_password = True
+        combi = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+        id = random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(combi)
+        if db.child('rooms').child(id).get().val() == None:
+            print('new id')
+        else:
+            print('existing id')
 
 class Main_Console():
     def main_console():
         def bind_send(e):
-            logics.send()
+            onetime_logics.send()
 
         def logout_cmd():
             v = messagebox.askokcancel('Confirm', 'Are you sure you want to logout now?')
             if v == True:
-                my_stream.close()
+                try:
+                    msg_stream.close()
+                except NameError:
+                    pass
                 frame_console.destroy()
                 window.title("SkyNet Messenger")
             else:
                 pass
 
         def reload_cmd():
-            global first_iter, my_stream
+            global first_iter, msg_stream
 
             reload.config(state=DISABLED)
-            my_stream.close()
+            msg_stream.close()
             first_iter = True
-            logics.read()
+            onetime_logics.read()
             reload.config(state=NORMAL)
 
         def on_closing():
@@ -495,10 +470,10 @@ class Main_Console():
             else:
                 pass
 
+        global text_box, msg_box, create_button, list_box, frame_console
         window.title("SkyNet Messenger")
         frame_console = Frame(window, bg=color2_litegrey)
         frame_console.place(x=0, y=0, width=w, height=h)
-        global text_box, msg_box, create_button
 
         msg_box = Entry(frame_console, bd=1, relief=SOLID)
         msg_box.place(x=10 + 200, y=h - 25 - 20, width=w - 100 - 200, height=30)
@@ -507,7 +482,7 @@ class Main_Console():
         send_error.place(x=w - 80 - 2, y=h - 25 - 20, width=72, height=30)
 
         send = Button(frame_console, text="Send", fg='green', bg=color2_litegrey, bd=0, activeforeground='dark green',
-                      activebackground=color2_litegrey, command=logics.send)
+                      activebackground=color2_litegrey, command=onetime_logics.send)
         send.place(x=w - 80 - 1, y=h - 25 - 19, width=70, height=28)
 
         scrollbar = Scrollbar(frame_console)
@@ -557,52 +532,11 @@ class Main_Console():
                                command=Main_Console.create_room_window)
         create_button.place(x=794, y=6 + sub_y, width=90, height=23)
         ###
-        logics.read()
-
-        list_box.insert(END, 'Kamalesh')
-
-    def profile_page():
-        global meet_img, meet, create_button
-        frame_profile = Frame(window, bg=color2_litegrey)
-        frame_profile.place(x=0, y=0, width=w, height=h)
-
-        meet_img = Image.open(ASSETS_PATH / "6/Share your thoughts!-logos_transparent.png")
-        meet_img = meet_img.resize((700, 700))
-        meet_img = ImageTk.PhotoImage(meet_img)
-        meet = Label(frame_profile, image=meet_img, bg=color2_litegrey)
-        meet.place(x=-150, y=h / 2 - 340)
-
-        Frame(frame_profile, bg=color4_topribbon).place(x=0, y=0, width=w, height=30)
-        back = Button(frame_profile, text='<Back', bd=0, bg=color4_topribbon, relief=SOLID,
-                      command=frame_profile.destroy,
-                      activebackground=color4_topribbon, fg=color1_text)
-        back.place(x=10, y=2, width=45, height=25)
-
-        sub_y = 10
-
-        l1 = Label(frame_profile, text='Room ID:', bg=color2_litegrey, fg=color1_text, anchor='w')
-        l1.place(x=w / 2 - 50, y=50 + sub_y, width=200, height=20)
-
-        room_error = Label(frame_profile, bd=0, bg='grey')
-        room_error.place(x=w / 2 - 51, y=69 + sub_y, width=202, height=25)
-        room_entry = Entry(frame_profile, bd=0, relief=SOLID)
-        room_entry.place(x=w / 2 - 50, y=70 + sub_y, width=200, height=23)
-
-        room_join_error = Label(frame_profile, bd=0, bg='grey')
-        room_join_error.place(x=609, y=69 + sub_y, width=72, height=25)
-        room_join = Button(frame_profile, text='Join', fg=color3_blue, bg=color2_litegrey, bd=0,
-                           activeforeground='blue',
-                           activebackground=color2_litegrey)
-        room_join.place(x=610, y=70 + sub_y, width=70, height=23)
-
-        create_error = Label(frame_profile, bd=0, bg='grey')
-        create_error.place(x=689, y=69 + sub_y, width=92, height=25)
-        create_button = Button(frame_profile, text='Create Room', fg=color3_blue, bg=color2_litegrey, bd=0,
-                               activeforeground='blue',
-                               activebackground=color2_litegrey, command=Main_Console.create_room_window)
-        create_button.place(x=690, y=70 + sub_y, width=90, height=23)
+        # thread_logics.read()
+        thread_logics.my_groups_list()
 
     def create_room_window():
+        global title_entry, password_entry
         def on_closing():
             create_button.config(state=NORMAL)
             window_create.destroy()
@@ -611,15 +545,15 @@ class Main_Console():
             if password.get():  # True
                 pass_option.config(image=lock_img)
                 l2.place(x=w1 / 2 - 100, y=80 + sub_y, width=200, height=20)
-                entry2_error.place(x=w1 / 2 - 101, y=99 + sub_y, width=202, height=25)
-                entry2.place(x=w1 / 2 - 100, y=100 + sub_y, width=200, height=23)
+                password_entry_error.place(x=w1 / 2 - 101, y=99 + sub_y, width=202, height=25)
+                password_entry.place(x=w1 / 2 - 100, y=100 + sub_y, width=200, height=23)
                 create_main_error.place(x=w1 / 2 - 51, y=149 + sub_y, width=102, height=27)
                 create_main.place(x=w1 / 2 - 50, y=150 + sub_y, width=100, height=25)
             else:  # False
                 pass_option.config(image=lockopen_img)
                 l2.place(x=- 1000, y=80 + sub_y, width=200, height=20)
-                entry2_error.place(x=- 1001, y=99 + sub_y, width=202, height=25)
-                entry2.place(x=- 1000, y=100 + sub_y, width=200, height=23)
+                password_entry_error.place(x=- 1001, y=99 + sub_y, width=202, height=25)
+                password_entry.place(x=- 1000, y=100 + sub_y, width=200, height=23)
                 create_main_error.place(x=w1 / 2 - 51, y=99 + sub_y, width=102, height=27)
                 create_main.place(x=w1 / 2 - 50, y=100 + sub_y, width=100, height=25)
 
@@ -642,15 +576,14 @@ class Main_Console():
             height=20)
         l2 = Label(window_create, text='Password:', anchor='w', bg=color2_litegrey, fg=color1_text, )
 
-        entry1_error = Label(window_create, bd=0, bg='grey')
-        entry1_error.place(x=w1 / 2 - 101, y=49 + sub_y, width=202, height=25)
+        title_entry_error = Label(window_create, bd=0, bg='grey')
+        title_entry_error.place(x=w1 / 2 - 101, y=49 + sub_y, width=202, height=25)
 
-        entry1 = Entry(window_create, bd=0, relief=SOLID)
-        entry1.place(x=w1 / 2 - 100, y=50 + sub_y, width=200, height=23)
+        title_entry = Entry(window_create, bd=0, relief=SOLID)
+        title_entry.place(x=w1 / 2 - 100, y=50 + sub_y, width=200, height=23)
 
-        entry2_error = Label(window_create, bd=0, bg='grey')
-
-        entry2 = Entry(window_create, bd=0, relief=SOLID)
+        password_entry_error = Label(window_create, bd=0, bg='grey')
+        password_entry = Entry(window_create, bd=0, relief=SOLID)
 
         lock_img = Image.open(ASSETS_PATH / "lock.png")
         lock_img = lock_img.resize((30, 30))
@@ -670,16 +603,88 @@ class Main_Console():
         create_main_error.place(x=w1 / 2 - 51, y=99 + sub_y, width=102, height=27)
         create_main = Button(frame_create, text='Create', fg='#5A6FFA', bg=color2_litegrey, bd=0,
                              activeforeground='blue',
-                             activebackground=color2_litegrey)
+                             activebackground=color2_litegrey,command=onetime_logics.create_room)
         create_main.place(x=w1 / 2 - 50, y=100 + sub_y, width=100, height=25)
 
 
+class thread_logics():
+    def my_groups_list():
+        global my_groups_stream
+
+        def stream_handler(message):
+            global over_all_list, group_list
+            over_all_list = message['data']
+            try:
+                group_list = list(message['data'])
+                list_box.delete(0, END)
+                for group in group_list:
+                    list_box.insert(END, group)
+            except:
+                print('error in line 608')
+
+        my_groups_stream = db.child('user_details').child(final_id).child('rooms').stream(stream_handler)
+
+        def click(e):
+            global selected_group
+            try:
+                msg_stream.close()
+            except:
+                pass
+            selected_group = over_all_list[list_box.get(ACTIVE)]
+            thread_logics.read()
+
+        list_box.bind("<Double 1>", click)
+
+    def read():
+        global first_iter, msg_stream, selected_group
+        first_iter = True
+
+        def stream_handler(message):
+            global first_iter, sent
+            # print('25', message)
+            data = message["data"]
+            # print('27', data)  # {'title': 'Pyrebase', "body": "etc..."}
+
+            if first_iter == False:
+                # print('30', data)
+                text_box.config(state=NORMAL)
+                text_box.insert(END, f"{data}\n")
+                text_box.see(END)
+                text_box.config(state=DISABLED)
+                try:
+                    if sent == True:
+                        msg_box.delete(0, END)
+                        sent = False
+                    else:
+                        pass
+                except:
+                    pass
+            if first_iter == True:
+                try:
+                    text_box.config(state=NORMAL)
+                    text_box.delete(1.0, END)
+                    text_box.config(state=DISABLED)
+                    for item in data:
+                        # print('35', data[item])
+                        text_box.config(state=NORMAL)
+                        text_box.insert(END, f"{data[item]}\n")
+                        text_box.see(END)
+                        text_box.config(state=DISABLED)
+                    first_iter = False
+                except TypeError:
+                    first_iter = False
+                    pass
+
+        # msg_stream = db.child("messages").stream(stream_handler)
+        msg_stream = db.child("rooms").child(selected_group).child('messages').stream(stream_handler)
+
+
 if __name__ == '__main__':
-    global my_stream
+    global msg_stream
     window = Tk()
     app = Interface(window)
     window.mainloop()
     try:
-        my_stream.close()
+        msg_stream.close()
     except:
         pass
