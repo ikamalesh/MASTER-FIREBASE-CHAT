@@ -16,6 +16,10 @@ db= firebase.database()
 data = {
     'admin':'ikamalesh_',
     'public':False,
-
+    'participants':['ikamalesh_','cms_kamalesh','ipriya_']
 }
-db.child('rooms').child('my family').set(data)
+#db.child('rooms').child('my family').set(data)
+f = db.child('rooms').child('my family').child('participants').get().val()
+f.append('max')
+print(f)
+db.child('rooms').child('my family').child('participants').set()
