@@ -454,19 +454,20 @@ class onetime_logics():
 
         try:
             participants_old = list(db.child('rooms').child(entry_room_id).child('participants').get().val())
+            if final_id not in participants_old:
+                participants_old.append(final_id)
+                db.child('rooms').child(entry_room_id).child('participants').set(participants_old)
+
+                rooms_old = db.child('user_details').child(final_id).child('rooms').get().val()
+                rooms_old = dict(rooms_old)
+                rooms_old[room_title] = entry_room_id
+                db.child('user_details').child(final_id).child('rooms').set(rooms_old)
+                room_entry.delete(0, END)
+            else:
+                messagebox.showinfo('Already in the group!', "You are already part of this room.")
         except:
             messagebox.showinfo('No such group',"Group doesn't exist.")
-        if final_id not in participants_old:
-            participants_old.append(final_id)
-            db.child('rooms').child(entry_room_id).child('participants').set(participants_old)
 
-            rooms_old = db.child('user_details').child(final_id).child('rooms').get().val()
-            rooms_old = dict(rooms_old)
-            rooms_old[room_title] = entry_room_id
-            db.child('user_details').child(final_id).child('rooms').set(rooms_old)
-            room_entry.delete(0,END)
-        else:
-            messagebox.showinfo('Already in the group!', "You are already part of this room.")
 
 
 class Main_Console():
