@@ -1,9 +1,10 @@
 import json
+import random
 from datetime import datetime
 from pathlib import Path
 from tkinter import *
 from tkinter import messagebox
-import random
+
 import pyrebase
 from PIL import Image, ImageTk
 
@@ -314,7 +315,8 @@ class onetime_logics():
                                 aentry2_error.config(bg='grey')
                                 auth.create_user_with_email_and_password(emailid, password)
                                 db.child('map').child(emailid.replace('.', '<dot>')).set(skynetid)
-                                db.child('user_details').child(skynetid).set({'email': emailid, 'name': name})
+                                db.child('user_details').child(skynetid).set(
+                                    {'email': emailid, 'name': name, "rooms": {"Skynet Team": "99999"}})
                                 proceed_signup = True
                             except:
                                 # print('Email Invalid')
@@ -432,11 +434,40 @@ class onetime_logics():
         else:
             is_password = True
         combi = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-        id = random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(combi)
+        id = random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(combi) + random.choice(
+            combi)
         if db.child('rooms').child(id).get().val() == None:
-            print('new id')
+            data = {"admin": final_id, "participants": [final_id], "title": title}
+            db.child('rooms').child(id).set(data)
+            for_new_group = db.child('user_details').child(final_id).child('rooms').get().val()
+            for_new_group = dict(for_new_group)
+            for_new_group[title] = id
+            db.child('user_details').child(final_id).child('rooms').set(for_new_group)
         else:
             print('existing id')
+
+    def join():
+        global participants_old
+
+        entry_room_id = room_entry.get()
+        room_title = db.child('rooms').child(entry_room_id).child('title').get().val()
+
+        try:
+            participants_old = list(db.child('rooms').child(entry_room_id).child('participants').get().val())
+        except:
+            messagebox.showinfo('No such group',"Group doesn't exist.")
+        if final_id not in participants_old:
+            participants_old.append(final_id)
+            db.child('rooms').child(entry_room_id).child('participants').set(participants_old)
+
+            rooms_old = db.child('user_details').child(final_id).child('rooms').get().val()
+            rooms_old = dict(rooms_old)
+            rooms_old[room_title] = entry_room_id
+            db.child('user_details').child(final_id).child('rooms').set(rooms_old)
+            room_entry.delete(0,END)
+        else:
+            messagebox.showinfo('Already in the group!', "You are already part of this room.")
+
 
 class Main_Console():
     def main_console():
@@ -459,10 +490,13 @@ class Main_Console():
             global first_iter, msg_stream
 
             reload.config(state=DISABLED)
-            msg_stream.close()
-            first_iter = True
-            onetime_logics.read()
-            reload.config(state=NORMAL)
+            try:
+                msg_stream.close()
+                first_iter = True
+                thread_logics.read()
+                reload.config(state=NORMAL)
+            except:
+                reload.config(state=NORMAL)
 
         def on_closing():
             if messagebox.askokcancel('Confirm', 'Are you sure you want to exit now?'):
@@ -470,7 +504,7 @@ class Main_Console():
             else:
                 pass
 
-        global text_box, msg_box, create_button, list_box, frame_console
+        global text_box, msg_box, create_button, list_box, frame_console, title_banner, room_entry
         window.title("SkyNet Messenger")
         frame_console = Frame(window, bg=color2_litegrey)
         frame_console.place(x=0, y=0, width=w, height=h)
@@ -486,6 +520,11 @@ class Main_Console():
         send.place(x=w - 80 - 1, y=h - 25 - 19, width=70, height=28)
 
         scrollbar = Scrollbar(frame_console)
+
+        title_banner = Label(frame_console, text='', bg=color2_litegrey, fg='black',
+                             font='Helvetica 12', anchor='w')
+        title_banner.place(x=10 + 200, y=50, width=w - 20 - 10 - 200, height=30)
+
         text_box = Text(frame_console, height=10, width=10, yscrollcommand=scrollbar.set, bd=1, relief=SOLID,
                         selectbackground='white', selectforeground='black', cursor='arrow')
         text_box.place(x=10 + 200, y=50 + 30, width=w - 20 - 10 - 200, height=h - 120 - 30)
@@ -493,8 +532,8 @@ class Main_Console():
         scrollbar.config(command=text_box.yview)
         scrollbar.place(x=w - 10 - 10, y=50 + 30, width=20, height=h - 120 - 30)
 
-        list_box = Listbox(frame_console, relief=SOLID, activestyle='none', font='Helvetica 14', bd=0,
-                           bg=color2_litegrey, selectbackground=color2_litegrey, selectforeground='red')
+        list_box = Listbox(frame_console, relief=SOLID, activestyle='none', font='Helvetica 10', bd=0,
+                           bg=color2_litegrey, selectbackground=color2_litegrey)
         list_box.place(x=10, y=50 + 30, width=190, height=h - 80 - 15)
 
         Frame(frame_console, bg=color2_litegrey).place(x=10, y=80, width=1, height=h - 80 - 15)
@@ -522,7 +561,7 @@ class Main_Console():
         room_join_error = Label(frame_console, bd=0, bg='grey')
         room_join_error.place(x=689, y=5 + sub_y, width=72, height=25)
         room_join = Button(frame_console, text='Join', fg=color3_blue, bg=color2_litegrey, bd=0,
-                           activeforeground='blue', activebackground=color2_litegrey)
+                           activeforeground='blue', activebackground=color2_litegrey, command=onetime_logics.join)
         room_join.place(x=690, y=6 + sub_y, width=70, height=23)
 
         create_error = Label(frame_console, bd=0, bg='grey')
@@ -537,6 +576,7 @@ class Main_Console():
 
     def create_room_window():
         global title_entry, password_entry
+
         def on_closing():
             create_button.config(state=NORMAL)
             window_create.destroy()
@@ -603,7 +643,7 @@ class Main_Console():
         create_main_error.place(x=w1 / 2 - 51, y=99 + sub_y, width=102, height=27)
         create_main = Button(frame_create, text='Create', fg='#5A6FFA', bg=color2_litegrey, bd=0,
                              activeforeground='blue',
-                             activebackground=color2_litegrey,command=onetime_logics.create_room)
+                             activebackground=color2_litegrey, command=onetime_logics.create_room)
         create_main.place(x=w1 / 2 - 50, y=100 + sub_y, width=100, height=25)
 
 
@@ -611,35 +651,54 @@ class thread_logics():
     def my_groups_list():
         global my_groups_stream
 
-        def stream_handler(message):
+        def rooms_stream_handler(message):
             global over_all_list, group_list
             over_all_list = message['data']
-            try:
+            try:#TRY STATEMENT
                 group_list = list(message['data'])
                 list_box.delete(0, END)
                 for group in group_list:
                     list_box.insert(END, group)
             except:
-                print('error in line 608')
+                quit()
 
-        my_groups_stream = db.child('user_details').child(final_id).child('rooms').stream(stream_handler)
+        my_groups_stream = db.child('user_details').child(final_id).child('rooms').stream(rooms_stream_handler,stream_id='my_groups_stream')
 
-        def click(e):
+        def double_click(e):
+            list_box.config(selectforeground='red', selectbackground=color2_litegrey)
+            if list_box.get(ACTIVE) == 'Skynet Team':
+                msg_box.config(state=DISABLED)
+            else:
+                msg_box.config(state=NORMAL)
             global selected_group
             try:
                 msg_stream.close()
             except:
                 pass
+
             selected_group = over_all_list[list_box.get(ACTIVE)]
             thread_logics.read()
+            title_banner.config(text=list_box.get(ACTIVE))
 
-        list_box.bind("<Double 1>", click)
+        def change_color(e):
+            list_box.config(selectforeground='black')
+            try:
+                msg_stream.close()
+            except:
+                pass
+            text_box.config(state=NORMAL)
+            text_box.delete(1.0, END)
+            text_box.config(state=DISABLED)
+            title_banner.config(text='')
+
+        list_box.bind("<Double 1>", double_click)
+        list_box.bind("<Button-1>", change_color)
 
     def read():
         global first_iter, msg_stream, selected_group
         first_iter = True
 
-        def stream_handler(message):
+        def read_stream_handler(message):
             global first_iter, sent
             # print('25', message)
             data = message["data"]
@@ -676,11 +735,11 @@ class thread_logics():
                     pass
 
         # msg_stream = db.child("messages").stream(stream_handler)
-        msg_stream = db.child("rooms").child(selected_group).child('messages').stream(stream_handler)
+        msg_stream = db.child("rooms").child(selected_group).child('messages').stream(read_stream_handler,stream_id='msg_stream',)
 
 
 if __name__ == '__main__':
-    global msg_stream
+    global msg_stream, my_groups_stream
     window = Tk()
     app = Interface(window)
     window.mainloop()
@@ -688,3 +747,6 @@ if __name__ == '__main__':
         msg_stream.close()
     except:
         pass
+    my_groups_stream.close()
+    quit(0)
+

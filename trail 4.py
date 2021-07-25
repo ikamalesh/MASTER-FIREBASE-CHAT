@@ -26,7 +26,4 @@ def addgroup():
     db.child('user_details').child('ikamalesh_').child('rooms').set(d)
 
 
-import random
-combi = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-f = random.choice(combi)+random.choice(combi)+random.choice(combi)+random.choice(combi)+random.choice(combi)
-print(db.child('rooms').child('I20CS').get().val())
+db.child('rooms').child('99999').child('title')
