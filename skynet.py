@@ -748,6 +748,9 @@ if __name__ == '__main__':
         msg_stream.close()
     except:
         pass
-    my_groups_stream.close()
+    try:
+        my_groups_stream.close()
+    except:
+        pass
     quit(0)
 
