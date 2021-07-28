@@ -443,7 +443,7 @@ class onetime_logics():
             for_new_group = dict(for_new_group)
             for_new_group[title] = id
             db.child('user_details').child(final_id).child('rooms').set(for_new_group)
-            messagebox.showinfo('Room ID',f"You room id : {id}")
+            messagebox.showinfo('Room ID',f"You room id: {id}")
         else:
             print('existing id')
 
@@ -467,7 +467,8 @@ class onetime_logics():
             else:
                 messagebox.showinfo('Already in the group!', "You are already part of this room.")
         except:
-            messagebox.showinfo('No such group', "Group doesn't exist.")
+            messagebox.showinfo('No such group',"Group doesn't exist.")
+
 
 
 class Main_Console():
@@ -655,7 +656,7 @@ class thread_logics():
         def rooms_stream_handler(message):
             global over_all_list, group_list
             over_all_list = message['data']
-            try:  # TRY STATEMENT
+            try:#TRY STATEMENT
                 group_list = list(message['data'])
                 list_box.delete(0, END)
                 for group in group_list:
@@ -663,8 +664,7 @@ class thread_logics():
             except:
                 quit()
 
-        my_groups_stream = db.child('user_details').child(final_id).child('rooms').stream(rooms_stream_handler,
-                                                                                          stream_id='my_groups_stream')
+        my_groups_stream = db.child('user_details').child(final_id).child('rooms').stream(rooms_stream_handler,stream_id='my_groups_stream')
 
         def double_click(e):
             list_box.config(selectforeground='red', selectbackground=color2_litegrey)
@@ -737,8 +737,7 @@ class thread_logics():
                     pass
 
         # msg_stream = db.child("messages").stream(stream_handler)
-        msg_stream = db.child("rooms").child(selected_group).child('messages').stream(read_stream_handler,
-                                                                                      stream_id='msg_stream', )
+        msg_stream = db.child("rooms").child(selected_group).child('messages').stream(read_stream_handler,stream_id='msg_stream',)
 
 
 if __name__ == '__main__':
