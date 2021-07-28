@@ -443,6 +443,7 @@ class onetime_logics():
             for_new_group = dict(for_new_group)
             for_new_group[title] = id
             db.child('user_details').child(final_id).child('rooms').set(for_new_group)
+            messagebox.showinfo('Room ID',f"You room id: {id}")
         else:
             print('existing id')
 
