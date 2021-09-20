@@ -46,7 +46,7 @@ class Interface():
         sub_y = 50
         color1_text, color2_litegrey, color3_blue, color4_topribbon = '#191919', '#EDF1F4', '#3A89ED', 'silver'
 
-        frame_login = Frame(window, bg=color2_litegrey)
+        frame_login = Frame(window, bg='white')
         frame_login.place(x=0, y=0, width=w, height=h)
 
         logo = Label(frame_login, image=logo_img, bg=color2_litegrey)
