@@ -497,8 +497,8 @@ class logics():
                         line = {"cred": False}
                     with open('assets/cred.json', 'w') as f:
                         json.dump(line, f)
-                    print('APPROVED')
-                    print('username', final_id)
+                    #print('APPROVED')
+                    #print('username', final_id)
                     entry1.delete(0, END), entry2.delete(0, END)
                     Interface.main_console()
                     final_name = db.child('user_details').child(final_id).child(
